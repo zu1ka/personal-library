@@ -103,5 +103,6 @@ const ProgressBar = ({ book }) => {
     </div>
   );
 };
+export default App;
 
 // add a book to a library with default values like status: "want to read", currentPage: 0 and favorites: false then edit based on what user does in library
