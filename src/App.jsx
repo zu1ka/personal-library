@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Star } from "lucide-react";
 
 import "./App.css";
 const name = "the lord of the rings";
@@ -8,6 +9,8 @@ const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_KEY;
 function App() {
   const [result, setResult] = useState([]);
   const [query, setQuery] = useState("");
+  const [library, setLibrary] = useState([]);
+  const [favorites, setFavorites] = useState({});
 
   useEffect(() => {
     if (!query.trim()) {
@@ -42,14 +45,63 @@ function App() {
       clearTimeout(timer);
     };
   }, [query]);
+
+  const addToLibrary = (book) => {
+    const libraryBook = {
+      ...book,
+      currentPage: 0,
+      progress: 0,
+      status: "want to read",
+    };
+    setLibrary([...library, libraryBook]);
+  };
   //
   return (
     <div>
       <Input query={query} setQuery={setQuery} />
-      <BookContainer result={result} />
+      <BookContainer result={result} onAddToLibrary={addToLibrary} />
+      <Library
+        setLibrary={setLibrary}
+        setResult={setResult}
+        setFavorites={setFavorites}
+      />
     </div>
   );
 }
+
+const Library = ({ setLibrary, setFavorites, setResult }) => {
+  const [btnFavorite, setBtnFavorite] = useState(false);
+  // const info = {
+  //   currentPage: 0,
+  //   favorites: false,
+  //   status: {}
+  // }
+
+  const addToFavorites = (e) => {
+    e.preventDefault();
+
+    setFavorites((favorites) => [...favorites, book]);
+  };
+  const removeFromFavorites = (e) => {
+    e.preventDefault();
+
+    setFavorites((favorites) =>
+      favorites.filter((item) => item.id !== book.id),
+    );
+  };
+
+  return (
+    <div>
+      <BookContainer result={result} />
+      <button className="btn-add-to-library" onClick={setLibrary}>
+        Add to Library
+      </button>
+      <button onChange>
+        <Star />
+      </button>
+    </div>
+  );
+};
 
 const Input = ({ query, setQuery }) => {
   const submitForm = (e) => {
@@ -87,6 +139,7 @@ const BookContainer = ({ result }) => {
             <p>{book.author}</p>
           </div>
           <ProgressBar book={book} />
+          <button onClick={() => onAddToLibrary(book)}>Add to library</button>
         </li>
       ))}
     </ul>
